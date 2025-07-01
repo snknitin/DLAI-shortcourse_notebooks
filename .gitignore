@@ -174,9 +174,9 @@ cython_debug/
 .abstra/
 
 # Visual Studio Code
-#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore 
+#  Visual Studio Code specific template is maintained in a separate VisualStudioCode.gitignore
 #  that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
-#  and can be added to the global gitignore or merged into this file. However, if you prefer, 
+#  and can be added to the global gitignore or merged into this file. However, if you prefer,
 #  you could uncomment the following to ignore the enitre vscode folder
 # .vscode/
 
@@ -192,3 +192,18 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+mlartifacts/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/artifacts/traces.json
+mlruns/0/meta.yaml
+mlruns/223183979091659639/meta.yaml
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/trace_info.yaml
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.source.git.branch
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.source.git.commit
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.source.git.repoURL
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.source.name
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.source.type
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.trace_schema.version
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.traceInputs
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.traceOutputs
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/request_metadata/mlflow.user
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/tags/mlflow.artifactLocation
+mlruns/223183979091659639/traces/7208ef2a463f4157a431e05c7fe7355e/tags/mlflow.traceName
