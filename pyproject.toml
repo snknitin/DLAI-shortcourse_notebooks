@@ -10,6 +10,8 @@ dependencies = [
     "ipykernel>=6.29.5",
     "jupyter>=1.1.1",
     "mlflow>=3.1.1",
+    "outlines>=1.0.4",
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
+    "transformers>=4.53.1",
 ]
