@@ -15,6 +15,14 @@ import matplotlib.pyplot as plt
 
 from outlines.processors.base_logits_processor import OutlinesLogitsProcessor, Array
 
+from transformers import AutoTokenizer
+from PIL import Image
+
+model_name = "HuggingFaceTB/SmolLM2-135M-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+
+
 if TYPE_CHECKING:
     from outlines.generate import Generator
 
@@ -28,16 +36,16 @@ except ImportError:
 
 class LogitTrackingProcessor(OutlinesLogitsProcessor):
     """Tracks logits for both structured and unstructured token generation.
-    
+
     For each position in the sequence, stores:
     - unstructured_logits: Raw logits from the model
     - structured_logits: Logits after applying constraints
     - vocab_tokens: Mapping from vocab indices to token strings
-    
+
     Each logit matrix has:
     - Columns: One for each position in the generated sequence
     - Rows: One for each token in the vocabulary
-    
+
     Attributes
     ----------
     processor : Optional[OutlinesLogitsProcessor]
@@ -51,10 +59,10 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
     chosen_tokens : List[int]
         Track actual chosen token IDs during generation
     """
-    
+
     def __init__(self, processor=None):
         """Initialize the tracking processor.
-        
+
         Parameters
         ----------
         processor : Optional[OutlinesLogitsProcessor]
@@ -66,28 +74,28 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         self.structured_logits = []    # List of logit arrays, one per position
         self.vocab_tokens = None      # Will store the vocabulary mapping
         self.chosen_tokens = []       # Track actual chosen tokens during generation
-        
+
     def process_logits(self, input_ids: Array, logits: Array) -> Array:
         """Process logits and store them.
-        
+
         This method:
         1. Stores the raw logits from the model
         2. Applies any structural constraints if a processor exists
         3. Stores the constrained logits
         4. Tracks the chosen token ID
-        
+
         Parameters
         ----------
         input_ids : Array
             The input token ids for each sequence in the batch
         logits : Array
             The original logits to process, shape (batch_size, vocab_size)
-            
+
         Returns
         -------
         Array
             The processed logits, shape (batch_size, vocab_size)
-            
+
         Notes
         -----
         - For unconstrained generation (no processor), structured = unstructured
@@ -95,30 +103,30 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         """
         # Always store the raw logits as unstructured
         self.unstructured_logits.append(logits[0].detach().cpu().numpy().copy())
-        
+
         # Store the actual chosen token ID if available
         if len(input_ids[0]) > 0:
             self.chosen_tokens.append(input_ids[0][-1].item())
-        
+
         # Apply structural constraints if we have a processor
         if self.processor is not None:
             processed = self.processor.process_logits(input_ids, logits)
             self.structured_logits.append(processed[0].detach().cpu().numpy().copy())
             return processed
-            
+
         # For unconstrained generation, structured = unstructured
         self.structured_logits.append(logits[0].detach().cpu().numpy().copy())
         return logits
-            
+
     def get_probabilities(self, as_matrix: bool = False) -> Dict[str, Union[List[NDArray], NDArray]]:
         """Get probability distributions computed from stored logits.
-        
+
         Parameters
         ----------
         as_matrix : bool
             If True, convert probability lists to matrices.
             Each matrix will have shape (vocab_size, n_positions)
-        
+
         Returns
         -------
         Dict[str, Union[List[NDArray], NDArray]]
@@ -136,7 +144,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             torch.softmax(torch.tensor(logits), dim=-1).numpy()
             for logits in self.structured_logits
         ]
-        
+
         if as_matrix:
             # Stack arrays into matrices
             unstructured = np.column_stack(unstructured_probs)
@@ -145,7 +153,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             # Return as lists
             unstructured = unstructured_probs
             structured = structured_probs
-            
+
         return {
             'unstructured': unstructured,
             'structured': structured
@@ -153,13 +161,13 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
 
     def get_logits(self, as_matrix: bool = False) -> Dict[str, Union[List[NDArray], NDArray]]:
         """Get the stored logit values.
-        
+
         Parameters
         ----------
         as_matrix : bool
             If True, convert logit lists to matrices.
             Each matrix will have shape (vocab_size, n_positions)
-        
+
         Returns
         -------
         Dict[str, Union[List[NDArray], NDArray]]
@@ -174,12 +182,12 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         else:
             unstructured = self.unstructured_logits
             structured = self.structured_logits
-            
+
         return {
             'unstructured': unstructured,
             'structured': structured
         }
-        
+
     def get_top_tokens(
         self,
         k: int = 10,
@@ -187,7 +195,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         include_logits: bool = True
     ) -> List[Dict[str, Any]]:
         """Get the top k tokens at specified positions with their probabilities and logits.
-        
+
         Parameters
         ----------
         k : int, optional
@@ -197,7 +205,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             By default analyzes all positions.
         include_logits : bool, optional
             Whether to include raw logit values in addition to probabilities
-            
+
         Returns
         -------
         List[Dict[str, Any]]
@@ -217,36 +225,36 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             positions = list(range(len(self.structured_logits)))
         elif isinstance(positions, int):
             positions = [positions]
-            
+
         # Get probabilities and logits
         probs = self.get_probabilities()
         logits = self.get_logits() if include_logits else None
-        
+
         # Get vocab mapping
         vocab = self.get_vocab_mapping()
-        
+
         results = []
         for pos in positions:
             if pos >= len(self.unstructured_logits):
                 continue
-                
+
             # Get text generated so far
             text_so_far = self.sequence(pos)
-            
+
             # Get values for this position
             u_probs = probs['unstructured'][pos]
             s_probs = probs['structured'][pos]
-            
+
             if include_logits:
                 u_logits = logits['unstructured'][pos]
                 s_logits = logits['structured'][pos]
-            
+
             # Get top k indices by maximum probability
             top_indices = np.argsort(np.maximum(u_probs, s_probs))[-k:][::-1]
-            
+
             # Get the actual next token for comparison
             next_token = self.sequence(pos + 1)[len(text_so_far):] if pos < len(self.structured_logits)-1 else ""
-            
+
             # Build token info list
             tokens = []
             for idx in top_indices:
@@ -257,31 +265,31 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
                     'constrained_prob': float(s_probs[idx]),
                     'is_chosen': token == next_token
                 }
-                
+
                 if include_logits:
                     token_info.update({
                         'natural_logit': float(u_logits[idx]),
                         'constrained_logit': float(s_logits[idx])
                     })
-                    
+
                 tokens.append(token_info)
-            
+
             results.append({
                 'position': pos,
                 'text_so_far': text_so_far,
                 'tokens': tokens
             })
-            
+
         return results
 
     def get_vocab_mapping(self) -> List[str]:
         """Get the mapping from vocabulary indices to token strings.
-        
+
         Returns
         -------
         List[str]
             List of token strings, where index matches vocabulary index
-        
+
         Raises
         ------
         AttributeError
@@ -289,16 +297,16 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         """
         if not hasattr(self, 'tokenizer'):
             raise AttributeError("No tokenizer available for mapping tokens")
-            
+
         if self.vocab_tokens is None:
             # Create the mapping if we haven't yet
             self.vocab_tokens = [
                 self.processor.tokenizer.decode([i])[0]
                 for i in range(len(self.unstructured_logits[0]))
             ]
-            
+
         return self.vocab_tokens
-        
+
     def clear(self):
         """Clear all stored logits."""
         self.unstructured_logits = []
@@ -312,7 +320,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         min_value: Optional[float] = None
     ) -> "pd.DataFrame":
         """Convert tracking data to a pandas DataFrame for analysis.
-        
+
         Parameters
         ----------
         show : Literal["probs", "logits"], optional
@@ -323,7 +331,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         min_value : Optional[float], optional
             If provided, only include tokens with values >= min_value
             in either structured or unstructured distribution
-            
+
         Returns
         -------
         pd.DataFrame
@@ -332,7 +340,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             - token: String representation of token
             - natural: Raw model values (probs/logits)
             - constrained: Values after constraints
-            
+
         Examples
         --------
         >>> # Get probability data for top 10 tokens
@@ -345,7 +353,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         >>>
         >>> # Get all tokens with probability > 1%
         >>> df = processor.to_dataframe(show="probs", min_value=0.01)
-            
+
         Raises
         ------
         ImportError
@@ -356,29 +364,29 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
                 "pandas is required for DataFrame support. "
                 "Please install it with: pip install pandas"
             )
-            
+
         # Get values based on show parameter
         if show == "probs":
             values = self.get_probabilities()
         else:
             values = self.get_logits()
-            
+
         # Get vocab mapping
         vocab = self.get_vocab_mapping()
-        
+
         # Create lists to store data
         rows = []
-        
+
         # Process each position
         for pos in range(len(self.unstructured_logits)):
             u_vals = values['unstructured'][pos]
             s_vals = values['structured'][pos]
-            
+
             # Get indices to include based on filters
             if top_k is not None or min_value is not None:
                 # Get maximum value between structured/unstructured for sorting
                 max_vals = np.maximum(u_vals, s_vals)
-                
+
                 if top_k is not None and min_value is not None:
                     # Both filters: get top k among values >= min_value
                     valid_indices = np.where(max_vals >= min_value)[0]
@@ -393,7 +401,7 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
             else:
                 # No filters: include all tokens
                 valid_indices = range(len(vocab))
-            
+
             # Add rows for valid indices
             for idx in valid_indices:
                 rows.append({
@@ -402,23 +410,23 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
                     'natural': u_vals[idx],
                     'constrained': s_vals[idx]
                 })
-        
+
         return pd.DataFrame(rows)
 
     def sequence(self, pos: Optional[int] = None) -> str:
         """Get the sequence of tokens generated up to a position.
-        
+
         Parameters
         ----------
         pos : Optional[int], optional
             Position to reconstruct up to (exclusive).
             If None, returns the entire sequence.
-            
+
         Returns
         -------
         str
             The concatenated string of chosen tokens
-            
+
         Raises
         ------
         AttributeError
@@ -426,41 +434,41 @@ class LogitTrackingProcessor(OutlinesLogitsProcessor):
         """
         if not self.chosen_tokens:
             return ""
-            
+
         if not hasattr(self, 'tokenizer'):
             raise AttributeError("No tokenizer available for decoding sequence")
-            
+
         # Get the tokenizer
         if hasattr(self.processor, 'tokenizer'):
             tokenizer = self.processor.tokenizer
         else:
             tokenizer = self.tokenizer
-            
+
         # Get tokens up to the specified position
         end_pos = len(self.chosen_tokens) if pos is None else pos
         tokens_to_decode = self.chosen_tokens[:end_pos]
-        
+
         # Decode the sequence
         return "".join(tokenizer.decode(tokens_to_decode))
 
 
 def track_logits(generator: "Generator") -> "Generator":
     """Add probability tracking to any generator.
-    
+
     This is a convenience function that wraps a generator's logits processor
     with a LogitTrackingProcessor, enabling analysis of token probabilities
     during generation.
-    
+
     Parameters
     ----------
     generator : Generator
         The generator to add tracking to
-        
+
     Returns
     -------
     Generator
         The same generator with tracking enabled
-        
+
     Examples
     --------
     >>> # Track probabilities for unconstrained text generation
@@ -482,10 +490,10 @@ def track_logits(generator: "Generator") -> "Generator":
     # Add tokenizer for token mapping
     if hasattr(generator.logits_processor, 'tokenizer'):
         tracking.tokenizer = generator.logits_processor.tokenizer
-    
+
     # Set as the generator's processor
     generator.logits_processor = tracking
-    
+
     return generator
 
 # This function applies a simple chat template to the prompt
@@ -499,11 +507,11 @@ def template(model, prompt: str, system_prompt: str = "You are a helpful assista
 
 def plot_token_distributions(tracking_processor, k=10, positions=None, prefix=""):
     """Plot token probability distributions before and after applying constraints.
-    
+
     Creates a horizontal bar chart showing:
     - Blue bars: What tokens the model would naturally choose
     - Orange bars: What tokens are allowed by structural constraints
-    
+
     Parameters
     ----------
     tracking_processor : LogitTrackingProcessor
@@ -514,7 +522,7 @@ def plot_token_distributions(tracking_processor, k=10, positions=None, prefix=""
         Which positions to plot. If None, plots all positions.
     prefix : str, optional
         Prefix for the output filename
-        
+
     Notes
     -----
     - Bar height indicates probability (how likely the model thinks each token is)
@@ -525,53 +533,53 @@ def plot_token_distributions(tracking_processor, k=10, positions=None, prefix=""
     # Get probability matrices and vocab mapping
     probs = tracking_processor.get_probabilities(as_matrix=True)
     vocab = tracking_processor.get_vocab_mapping()
-    
+
     # Determine positions to plot
     if positions is None:
         positions = list(range(probs['unstructured'].shape[1]))
     n_positions = len(positions)
-    
+
     # Create plot
     fig, axes = plt.subplots(1, n_positions)
     if n_positions == 1:
         axes = [axes]
-    
+
     for idx, pos in enumerate(positions):
         # Get probabilities for this position
         unstructured = probs['unstructured'][:, pos]
         structured = probs['structured'][:, pos]
-        
+
         # Get top k tokens by maximum probability
         top_indices = np.argsort(np.maximum(unstructured, structured))[-k:]
-        
+
         # Create bar positions
         y = np.arange(len(top_indices))
         height = 0.35
-        
+
         # Plot bars
-        axes[idx].barh(y - height/2, unstructured[top_indices], height, 
+        axes[idx].barh(y - height/2, unstructured[top_indices], height,
                       label='Unconstrained', alpha=0.7, color='skyblue')
         axes[idx].barh(y + height/2, structured[top_indices], height,
                       label='Constrained', alpha=0.7, color='orange')
-        
+
         # Customize plot
         axes[idx].set_title('Next token probability')
         axes[idx].set_yticks(y)
         axes[idx].set_yticklabels([vocab[i] for i in top_indices])
         axes[idx].set_xlabel('Probability')
         axes[idx].tick_params(axis='both', labelsize=16)  # This changes tick label sizes
-        
+
         # Add legend
         axes[idx].legend(loc='lower right', bbox_to_anchor=(1, 1.1))
         axes[idx].grid(True, alpha=0.3)
-        
+
         # Add probability values
         for i, (v1, v2) in enumerate(zip(unstructured[top_indices], structured[top_indices])):
             if v1 > 0.01:  # Only show probabilities > 1%
                 axes[idx].text(v1 + 0.01, i - height/2, f'{v1:.1%}', va='center')
             if v2 > 0.01:
                 axes[idx].text(v2 + 0.01, i + height/2, f'{v2:.1%}', va='center')
-    
+
     plt.tight_layout()
     # plt.savefig(f"{prefix}token_distributions.png", dpi=300, bbox_inches='tight')
     plt.show()
@@ -580,11 +588,11 @@ def plot_token_distributions(tracking_processor, k=10, positions=None, prefix=""
 
 def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=True, kind="logits", show_tokens=True):
     """Plot a heatmap of token probabilities across sequence positions.
-    
+
     Creates a heatmap visualization showing how token probabilities evolve
     across different positions in the sequence. Optionally shows both
     natural and constrained probabilities side by side.
-    
+
     Parameters
     ----------
     tracking_processor : LogitTrackingProcessor
@@ -602,7 +610,7 @@ def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=
         Whether to plot logits or probabilities, by default "logits"
     show_tokens : bool, optional
         Whether to show the token strings on the y-axis, by default True
-        
+
     Notes
     -----
     - Brighter colors indicate higher probabilities
@@ -620,27 +628,27 @@ def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=
         things = tracking_processor.get_probabilities(as_matrix=True)
         # For probabilities, mask out near-zero values
         threshold = 0.001  # Probabilities below 0.1% are masked
-    
+
     vocab = tracking_processor.get_vocab_mapping()
-    
+
     # Determine positions to plot
     if positions is None:
         positions = list(range(things['unstructured'].shape[1]))
-    
+
     # Get indices of top k tokens (by maximum probability across all positions)
     max_probs = np.maximum(
         things['unstructured'].max(axis=1),
         things['structured'].max(axis=1)
     )
     top_indices = np.argsort(max_probs)[-k:]
-    
+
     # Create masked arrays for better visualization
     def mask_array(arr):
         if kind == "logits":
             return np.ma.masked_where(arr < threshold, arr)
         else:
             return np.ma.masked_where(arr < threshold, arr)
-    
+
     unstructured_masked = mask_array(things['unstructured'][top_indices][:, positions])
     structured_masked = mask_array(things['structured'][top_indices][:, positions])
 
@@ -652,7 +660,7 @@ def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=
         fig.suptitle(f'Token {kind.capitalize()} Evolution', fontsize=16, y=1.05)
     else:
         fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
-    
+
     # Plot natural probabilities with masked array
     im1 = ax1.imshow(
         unstructured_masked,
@@ -666,7 +674,7 @@ def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=
         ax1.set_yticks(range(len(top_indices)))
         ax1.set_yticklabels([vocab[i] for i in top_indices])
     plt.colorbar(im1, ax=ax1, label=f'{kind.capitalize()}')
-    
+
     # Plot constrained probabilities if requested
     if show_both:
         im2 = ax2.imshow(
@@ -678,9 +686,68 @@ def plot_heatmap(tracking_processor, k=50, positions=None, prefix="", show_both=
         ax2.set_xlabel('Position in Sequence')
         ax2.set_yticks([])  # Hide y-ticks since they're the same as ax1
         plt.colorbar(im2, ax=ax2, label=f'{kind.capitalize()}')
-    
+
     plt.tight_layout()
     # plt.savefig(f"{prefix}{kind}_heatmap.png", dpi=300, bbox_inches='tight')
     plt.show()
     plt.close()
 
+
+# This function applies a simple chat template to the prompt
+# Move this to utils
+def template(prompt: str,
+             system_prompt: str = "You are a helpful assistant.") -> str:
+    return tokenizer.apply_chat_template(
+        [{"role": "system", "content": system_prompt},
+         {"role": "user", "content": prompt}],
+        tokenize=False,
+        add_bos=True,
+        add_generation_prompt=True,
+    )
+
+def load_and_resize_image(image_path, max_size=1024):
+    """
+    Load and resize an image while maintaining aspect ratio
+
+    Args:
+        image_path: Path to the image file
+        max_size: Maximum dimension (width or height) of the output image
+
+    Returns:
+        PIL Image: Resized image
+    """
+    image = Image.open(image_path)
+
+    # Get current dimensions
+    width, height = image.size
+
+    # Calculate scaling factor
+    scale = min(max_size / width, max_size / height)
+
+    # Only resize if image is larger than max_size
+    if scale < 1:
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+
+    return image
+
+DEFAULT_BASE_PROMPT="Is this a hotdog or not a hotdog"
+def get_messages(image, base_prompt=DEFAULT_BASE_PROMPT):
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    # The image is provided as a PIL Image object
+                    "type": "image",
+                    "image": image,
+                },
+                {
+                    "type": "text",
+                    "text": base_prompt
+                },
+            ],
+        }
+    ]
+    return messages

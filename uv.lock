@@ -678,7 +678,7 @@ requires-dist = [
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "mlflow", specifier = ">=3.1.1" },
-    { name = "outlines", specifier = ">=1.0.4" },
+    { name = "outlines", specifier = "==0.2.1" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "requests", specifier = ">=2.32.4" },
     { name = "transformers", specifier = ">=4.53.1" },
@@ -1428,18 +1428,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/12/be/c6c745ec4c4539b25a278b70e29793f10382947df0d9efba2fa09120895d/json5-0.12.0.tar.gz", hash = "sha256:0b4b6ff56801a1c7dc817b0241bca4ce474a0e6a163bfef3fc594d3fd263ff3a", size = 51907, upload-time = "2025-04-03T16:33:13.201Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/41/9f/3500910d5a98549e3098807493851eeef2b89cdd3032227558a104dfe926/json5-0.12.0-py3-none-any.whl", hash = "sha256:6d37aa6c08b0609f16e1ec5ff94697e2cbbfbad5ac112afa05794da9ab7810db", size = 36079, upload-time = "2025-04-03T16:33:11.927Z" },
-]
-
-[[package]]
-name = "jsonpath-ng"
-version = "1.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "ply" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/86/08646239a313f895186ff0a4573452038eed8c86f54380b3ebac34d32fb2/jsonpath-ng-1.7.0.tar.gz", hash = "sha256:f6f5f7fd4e5ff79c785f1573b394043b39849fb2bb47bcead935d12b00beab3c", size = 37838, upload-time = "2024-10-11T15:41:42.404Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/35/5a/73ecb3d82f8615f32ccdadeb9356726d6cae3a4bbc840b437ceb95708063/jsonpath_ng-1.7.0-py3-none-any.whl", hash = "sha256:f3d7f9e848cba1b6da28c55b1c26ff915dc9e0b1ba7e752a53d6da8d5cbd00b6", size = 30105, upload-time = "2024-11-20T17:58:30.418Z" },
 ]
 
 [[package]]
@@ -2566,7 +2554,7 @@ wheels = [
 
 [[package]]
 name = "outlines"
-version = "1.0.4"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "airportsdata" },
@@ -2576,12 +2564,12 @@ dependencies = [
     { name = "interegular" },
     { name = "iso3166" },
     { name = "jinja2" },
-    { name = "jsonpath-ng" },
     { name = "jsonschema" },
     { name = "lark" },
     { name = "nest-asyncio" },
+    { name = "numpy" },
     { name = "outlines-core" },
-    { name = "pillow" },
+    { name = "pre-commit" },
     { name = "pydantic" },
     { name = "referencing" },
     { name = "requests" },
@@ -2589,9 +2577,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/0a/c5/b1dc12109d6a56313d3704003d6a5f5586de1ad99c86f257ff05e314269c/outlines-1.0.4.tar.gz", hash = "sha256:46925e16c6a1e09661a890a92f8ed85df1da64fed56f0161b136e14c8810cc26", size = 2847718, upload-time = "2025-07-04T19:27:06.482Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/04/07/f9cb8bd7ad2128080556b8ea3eebb6d3e83d68b83e045b9647bd4530c7fd/outlines-0.2.1.tar.gz", hash = "sha256:43391e18665245eeb141b09cc53896fad610a6c587698577de196ba4758cc420", size = 2718107, upload-time = "2025-02-24T08:51:07.69Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/ff/b760aa6fe93986183d6fc7f0b8b7cf13054032a95366843b2c40d489477e/outlines-1.0.4-py3-none-any.whl", hash = "sha256:038e096cca0aeb566934d5f2c72a030f4d5a652d725f6a651d5e19ebf9897a24", size = 131023, upload-time = "2025-07-04T19:27:04.867Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/0e/49797f123d411446961e8b402fd5cf105608f772c8305ff332f835d00501/outlines-0.2.1-py3-none-any.whl", hash = "sha256:bc3ff720d0a3117c70bf77236b619e02824d7ffb205ea7e8f701690ab42d3707", size = 90118, upload-time = "2025-02-24T08:51:02.217Z" },
 ]
 
 [[package]]
@@ -2791,15 +2779,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/fe/8b/3c73abc9c759ecd3f1f7ceff6685840859e8070c4d947c93fae71f6a0bf2/platformdirs-4.3.8.tar.gz", hash = "sha256:3d512d96e16bcb959a814c9f348431070822a6496326a4be0911c40b5a74c2bc", size = 21362, upload-time = "2025-05-07T22:47:42.121Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/39/979e8e21520d4e47a0bbe349e2713c0aac6f3d853d0e5b34d76206c439aa/platformdirs-4.3.8-py3-none-any.whl", hash = "sha256:ff7059bb7eb1179e2685604f4aaf157cfd9535242bd23742eadc3c13542139b4", size = 18567, upload-time = "2025-05-07T22:47:40.376Z" },
-]
-
-[[package]]
-name = "ply"
-version = "3.11"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e5/69/882ee5c9d017149285cab114ebeab373308ef0f874fcdac9beb90e0ac4da/ply-3.11.tar.gz", hash = "sha256:00c7c1aaa88358b9c765b6d3000c6eec0ba42abca5351b095321aef446081da3", size = 159130, upload-time = "2018-02-15T19:01:31.097Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a3/58/35da89ee790598a0700ea49b2a66594140f44dec458c07e8e3d4979137fc/ply-3.11-py2.py3-none-any.whl", hash = "sha256:096f9b8350b65ebd2fd1346b12452efe5b9607f7482813ffca50c22722a807ce", size = 49567, upload-time = "2018-02-15T19:01:27.172Z" },
 ]
 
 [[package]]
