@@ -197,3 +197,6 @@ mlartifacts/*
 courses/dspy/notebooks/mlruns/0/meta.yaml
 courses/dspy/data/*
 courses/dspy/outputs/*
+courses/Structured_LLM_Output/data/*
+courses/Structured_LLM_Output/outputs/*
+
