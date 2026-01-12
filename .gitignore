@@ -200,3 +200,8 @@ courses/dspy/outputs/*
 courses/Structured_LLM_Output/data/*
 courses/Structured_LLM_Output/outputs/*
 
+.github/copilot-instructions.md
+.github/COPILOT-SETUP-GUIDE.md
+.github/instructions/ml-data-science-instructions.md
+.github/instructions/notebook-instructions.md
+.github/instructions/python-core-instructions.md

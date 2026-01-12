@@ -5,13 +5,22 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "accelerate>=1.8.1",
+    "comet-ml>=3.49.11",
+    "diffusers>=0.34.0",
     "dspy>=2.6.27",
+    "einops>=0.8.1",
     "instructor>=1.9.0",
     "ipykernel>=6.29.5",
     "jupyter>=1.1.1",
     "mlflow>=3.1.1",
-    "outlines==0.2.1",
+    "outlines>=1.0.4",
     "python-dotenv>=1.1.1",
     "requests>=2.32.4",
+    "scikit-image>=0.25.2",
+    "torch>=2.7.1",
+    "torchaudio>=2.7.1",
+    "torchvision>=0.22.1",
     "transformers>=4.53.1",
+    "ultralytics>=8.3.162",
 ]
