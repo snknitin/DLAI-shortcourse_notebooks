@@ -760,7 +760,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "accelerate", specifier = ">=1.8.1" },
+    { name = "accelerate", specifier = ">=0.31.0" },
     { name = "comet-ml", specifier = ">=3.49.11" },
     { name = "diffusers", specifier = ">=0.34.0" },
     { name = "dspy", specifier = ">=2.6.27" },
@@ -776,7 +776,7 @@ requires-dist = [
     { name = "torch", specifier = ">=2.7.1" },
     { name = "torchaudio", specifier = ">=2.7.1" },
     { name = "torchvision", specifier = ">=0.22.1" },
-    { name = "transformers", specifier = ">=4.46.1" },
+    { name = "transformers", specifier = ">=4.41.2" },
     { name = "ultralytics", specifier = ">=8.3.162" },
 ]
 
