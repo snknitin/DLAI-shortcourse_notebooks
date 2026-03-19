@@ -207,3 +207,5 @@ courses/Structured_LLM_Output/outputs/*
 .github/instructions/python-core-instructions.md
 courses/C8 - Open Source Models with Hugging Face/data/esc50/train/data-00000-of-00002.arrow
 courses/C8 - Open Source Models with Hugging Face/data/esc50/train/data-00001-of-00002.arrow
+courses/C8 - Open Source Models with Hugging Face/data/narration_example.wav
+courses/C8 - Open Source Models with Hugging Face/notebooks/.gradio/certificate.pem
