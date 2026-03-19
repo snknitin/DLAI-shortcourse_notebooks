@@ -1,0 +1,69 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "esc50",
+  "dataset_size": 882230336,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/ashraq/esc50@e3e2a63ffff66b9a9735524551e3818e96af03ee/data/train-00000-of-00002-2f1ab7b824ec751f.parquet": {
+      "num_bytes": 386533721,
+      "checksum": null
+    },
+    "hf://datasets/ashraq/esc50@e3e2a63ffff66b9a9735524551e3818e96af03ee/data/train-00001-of-00002-27425e5c1846b494.parquet": {
+      "num_bytes": 386787270,
+      "checksum": null
+    }
+  },
+  "download_size": 773320991,
+  "features": {
+    "filename": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "fold": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "target": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "category": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "esc10": {
+      "dtype": "bool",
+      "_type": "Value"
+    },
+    "src_file": {
+      "dtype": "int64",
+      "_type": "Value"
+    },
+    "take": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "audio": {
+      "_type": "Audio"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 1655551327,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 882230336,
+      "num_examples": 2000,
+      "dataset_name": "esc50"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
