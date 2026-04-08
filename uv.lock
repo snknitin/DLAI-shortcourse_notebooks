@@ -1196,6 +1196,7 @@ dependencies = [
     { name = "comet-ml" },
     { name = "datasets" },
     { name = "diffusers" },
+    { name = "docarray" },
     { name = "dspy" },
     { name = "einops" },
     { name = "faiss-cpu" },
@@ -1259,6 +1260,7 @@ requires-dist = [
     { name = "comet-ml", specifier = ">=3.49.11" },
     { name = "datasets", specifier = ">=3.6.0" },
     { name = "diffusers", specifier = ">=0.34.0" },
+    { name = "docarray", specifier = ">=0.41.0" },
     { name = "dspy", specifier = ">=2.6.27" },
     { name = "einops", specifier = ">=0.8.1" },
     { name = "faiss-cpu" },
@@ -1321,6 +1323,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/85/8e/8f2f94cd40af1b51e8e371a83b385d622170d42f98776441a6118f4dd682/dlinfo-2.0.0.tar.gz", hash = "sha256:88a2bc04f51d01bc604cdc9eb1c3cc0bde89057532ca6a3e71a41f6235433e17", size = 12727, upload-time = "2025-01-16T15:43:10.756Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/da/90/022c79d6e5e6f843268c10b84d4a021ee3afba0621d3c176d3ff2024bfc8/dlinfo-2.0.0-py3-none-any.whl", hash = "sha256:b32cc18e3ea67c0ca9ca409e5b41eed863bd1363dbc9dd3de90fedf11b61e7bc", size = 3654, upload-time = "2025-01-16T15:43:09.474Z" },
+]
+
+[[package]]
+name = "docarray"
+version = "0.41.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+    { name = "orjson" },
+    { name = "pydantic" },
+    { name = "rich" },
+    { name = "types-requests" },
+    { name = "typing-inspect" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d4/62/1ec46699f621338fc0fe15249ff6ca8aba7d48fd3e34bd8ad761fdd0270c/docarray-0.41.0.tar.gz", hash = "sha256:7fb34eed16f25ba90b1425b263553f3735da987bf8433ff844d754b8b2c3ef81", size = 207945, upload-time = "2025-03-21T08:34:44.552Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/fe/4a1fc93d8119087544579b5c8a09a50d5573fcb64fe92fc8143cf8b851ad/docarray-0.41.0-py3-none-any.whl", hash = "sha256:a544ac75f77165b1861d2c19c2993835a635fc2267871c469e1006497a99421d", size = 302815, upload-time = "2025-03-21T08:34:42.207Z" },
 ]
 
 [[package]]
