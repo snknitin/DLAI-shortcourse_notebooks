@@ -48,12 +48,29 @@ dependencies = [
     "soundfile",
     "streamlit>=1.30.0",
     "timm",
-    "torch>=2.7.1",
-    "torchaudio>=2.7.1",
-    "torchvision>=0.22.1",
+    "torch>=2.11.0",
+    "torchaudio>=2.11.0",
+    "torchvision>=0.26.0",
     "transformers>=4.41.2",
     "ultralytics>=8.3.162",
     "umap-learn",
     "uvicorn>=0.35.0",
     "weaviate-client>=3.26.7,<4.0.0",
+]
+
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+]
+torchaudio = [
+    { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
+]
+torchvision = [
+    { index = "pytorch-cu130", marker = "sys_platform == 'win32'" },
 ]
