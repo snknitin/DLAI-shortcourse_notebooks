@@ -18,6 +18,7 @@ dependencies = [
     "faiss-cpu",
     "fastapi>=0.115.14",
     "gradio>=6.11.0",
+    "graphviz>=0.21",
     "hf-xet",
     "inflect",
     "instructor>=1.9.0",
